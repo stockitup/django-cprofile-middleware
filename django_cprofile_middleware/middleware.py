@@ -48,7 +48,7 @@ class ProfilerMiddleware(MiddlewareMixin):
         if requires_staff and not (request.user and request.user.is_staff):
             return False
 
-        return settings.DEBUG and 'prof' in request.GET
+        return 'prof' in request.GET
 
     def process_view(self, request, callback, callback_args, callback_kwargs):
         if self.can(request):
