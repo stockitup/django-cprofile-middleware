@@ -50,20 +50,15 @@ class ProfilerMiddleware(MiddlewareMixin):
 
         return 'prof' in request.GET
 
-    def process_view(self, request, callback, callback_args, callback_kwargs):
+    def process_request(self, request):
         if self.can(request):
             self.profiler = profile.Profile()
-            args = (request,) + callback_args
-            try:
-                return self.profiler.runcall(
-                    callback, *args, **callback_kwargs)
-            except Exception:
-                # we want the process_exception middleware to fire
-                # https://code.djangoproject.com/ticket/12250
-                return
+            self.profiler.enable()
+
 
     def process_response(self, request, response):
         if self.can(request):
+            self.profiler.disable()
             self.profiler.create_stats()
             if 'download' in request.GET:
                 import marshal
